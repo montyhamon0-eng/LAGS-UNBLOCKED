@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collection | LAGS UNBLOCKED</title>
+  <meta name="description" content="View and manage a game collection on LAGS UNBLOCKED.">
+  <link rel="icon" type="image/svg+xml" href="assets/logo/favicon.svg">
+  <link rel="icon" href="assets/logo/favicon.ico" sizes="32x32">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="lags-meme-bg" class="meme-bg-container" style="display:none;"></div>
+  <canvas id="lags-bg-canvas"></canvas>
+  <div id="lags-bg-overlay" class="bg-overlay"></div>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo" aria-label="LAGS UNBLOCKED home">
+        <img src="assets/logo/logo.svg" alt="LAGS UNBLOCKED" class="logo-img">
+        <span class="logo-text">LAGS<span class="logo-accent">UNBLOCKED</span></span>
+      </a>
+      <nav class="nav" id="main-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="library.html" class="nav-link">Library</a>
+        <a href="collections.html" class="nav-link js-auth-profile">Collections</a>
+        <button class="nav-link settings-btn" id="open-settings" aria-label="Open settings">Settings</button>
+        <a href="login.html" class="nav-link js-auth-login" style="display:none;">Login</a>
+        <a href="register.html" class="nav-link js-auth-login" style="display:none;">Register</a>
+        <button class="nav-link js-auth-logout" id="nav-logout" style="display:none;">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="collection-detail-page">
+    <div class="container">
+      <div id="collection-loading" style="text-align:center;padding:40px 0;">Loading collection...</div>
+      <div id="collection-error" style="text-align:center;padding:40px 0;color:#ef4444;display:none;"></div>
+
+      <div id="collection-container" style="display:none;">
+        <div class="collection-header">
+          <h1 id="collection-title">Collection</h1>
+          <p id="collection-visibility"></p>
+          <div class="collection-actions">
+            <button class="btn btn-outline" id="add-game-btn">Add Game</button>
+            <button class="btn btn-outline" id="delete-collection-btn">Delete Collection</button>
+            <a href="collections.html" class="btn btn-outline">Back to Collections</a>
+          </div>
+        </div>
+
+        <h2>Games in Collection</h2>
+        <div class="game-grid" id="collection-games-grid"></div>
+      </div>
+
+      <!-- Add Game Modal -->
+      <div class="modal" id="add-game-modal">
+        <div class="modal-backdrop" id="add-game-backdrop"></div>
+        <div class="modal-content" style="max-width:620px;">
+          <div class="modal-header">
+            <h3>Add Game to Collection</h3>
+            <button class="modal-close" id="add-game-close">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Select a game</label>
+              <select id="add-game-select" style="width:100%;background:#0a0a0f;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;color:var(--text);"></select>
+            </div>
+            <div class="form-error" id="add-game-error" style="display:none;"></div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline" id="add-game-cancel">Cancel</button>
+            <button class="btn btn-primary" id="add-game-confirm">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand"><div class="logo-mini">LAGS<span class="logo-accent">UNBLOCKED</span></div><p>Free HTML5 games. Play anywhere.</p></div>
+      <div class="footer-links"><a href="index.html">Home</a><a href="collections.html">Collections</a></div>
+    </div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.3/dist/pocketbase.umd.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/background.js"></script>
+  <script src="script.js"></script>
+  <script>
+    (function(){
+      const urlParams = new URLSearchParams(window.location.search);
+      const collectionId = urlParams.get('id');
+      if(!collectionId){ window.location.href='collections.html'; return; }
+
+      const container = document.getElementById('collection-container');
+      const loading = document.getElementById('collection-loading');
+      const errorDiv = document.getElementById('collection-error');
+      const grid = document.getElementById('collection-games-grid');
+      const titleEl = document.getElementById('collection-title');
+      const visibilityEl = document.getElementById('collection-visibility');
+
+      // Modal
+      const modal = document.getElementById('add-game-modal');
+      const backdrop = document.getElementById('add-game-backdrop');
+      const closeBtn = document.getElementById('add-game-close');
+      const openBtn = document.getElementById('add-game-btn');
+      const cancelBtn = document.getElementById('add-game-cancel');
+      const confirmBtn = document.getElementById('add-game-confirm');
+      const select = document.getElementById('add-game-select');
+      const addError = document.getElementById('add-game-error');
+      const closeModal = ()=>{ modal.classList.remove('open'); addError.style.display='none'; };
+      closeBtn.addEventListener('click', closeModal);
+      backdrop.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+      openBtn.addEventListener('click', ()=>{
+        loadGamesForSelect();
+        modal.classList.add('open');
+      });
+
+      let collection = null;
+
+      async function init(){
+        try {
+          collection = await window.LAGS_AUTH.getCollectionGames(collectionId);
+          // We need collection meta; fetch collections and find
+          const collections = await window.LAGS_AUTH.getMyCollections();
+          collection = collections.find(c=>c.id===collectionId) || collection;
+          if(!collection){ errorDiv.textContent='Collection not found.'; errorDiv.style.display='block'; return; }
+          titleEl.textContent = collection.name;
+          visibilityEl.textContent = (collection.visibility==='public'?'Public':'Private') + ' collection';
+          loadGames();
+        } catch(e){
+          errorDiv.textContent = e.message || 'Failed to load collection.';
+          errorDiv.style.display='block';
+        } finally {
+          loading.style.display='none';
+          container.style.display='block';
+        }
+      }
+
+      async function loadGames(){
+        try {
+          const items = await window.LAGS_AUTH.getCollectionGames(collectionId);
+          grid.innerHTML='';
+          if(items.length===0){
+            grid.innerHTML='<p style="color:var(--text-muted);grid-column:1/-1;">No games in this collection.</p>';
+            return;
+          }
+          items.forEach(item=>{
+            const game = item.game_id ? {id:item.game_id} : null;
+            // game_id is a string; display generic since we don't have full game data here without games.json cross-ref
+            const el = document.createElement('div');
+            el.className = 'game-card';
+            el.innerHTML = `
+              <div class="game-card-thumb" style="background:linear-gradient(135deg,var(--accent-purple),var(--accent-blue));display:flex;align-items:center;justify-content:center;font-size:30px;">🎮</div>
+              <div class="game-card-info">
+                <div class="game-card-title">Saved Game</div>
+                <div class="game-card-category">Added ${new Date(item.added||item.created).toLocaleDateString()}</div>
+              </div>
+              <button class="btn btn-small btn-outline" style="position:absolute;top:10px;right:10px;" onclick="removeGameFromCollection('${item.id}')">Remove</button>
+            `;
+            grid.appendChild(el);
+          });
+        } catch(e){ console.warn(e); }
+      }
+
+      async function loadGamesForSelect(){
+        try {
+          // Load games.json via fetch
+          const res = await fetch('games.json');
+          const data = await res.json();
+          const games = data.games || [];
+          select.innerHTML = '';
+          games.forEach(g=>{
+            const opt = document.createElement('option');
+            opt.value = g.id;
+            opt.textContent = g.title + ' (' + g.category + ')';
+            select.appendChild(opt);
+          });
+        } catch(e){
+          addError.textContent = 'Failed to load game list.';
+          addError.style.display='block';
+        }
+      }
+
+      confirmBtn.addEventListener('click', async ()=>{
+        const gameId = select.value;
+        if(!gameId) return;
+        try {
+          await window.LAGS_AUTH.addGameToCollection(collectionId, gameId);
+          closeModal();
+          loadGames();
+        } catch(err){
+          addError.textContent = err.message || 'Failed to add game.';
+          addError.style.display='block';
+        }
+      });
+
+      window.removeGameFromCollection = async (collectionGameId)=>{
+        if(!confirm('Remove this game from the collection?')) return;
+        try {
+          await window.LAGS_AUTH.removeGameFromCollection(collectionGameId);
+          loadGames();
+        } catch(err){
+          alert(err.message || 'Failed to remove game.');
+        }
+      };
+
+      document.getElementById('delete-collection-btn').addEventListener('click', async ()=>{
+        if(!confirm('Delete this collection? This cannot be undone.')) return;
+        try {
+          await window.LAGS_AUTH.deleteCollection(collectionId);
+          window.location.href = 'collections.html';
+        } catch(err){
+          alert(err.message || 'Failed to delete collection.');
+        }
+      });
+
+      document.getElementById('nav-logout').addEventListener('click', async (e)=>{
+        e.preventDefault();
+        await window.LAGS_AUTH.logout();
+        window.location.href = 'index.html';
+      });
+
+      init();
+    })();
+  </script>
+</body>
+</html>

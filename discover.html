@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover People | LAGS UNBLOCKED</title>
+  <meta name="description" content="Discover and follow people in the LAGS UNBLOCKED community.">
+  <link rel="icon" type="image/svg+xml" href="assets/logo/favicon.svg">
+  <link rel="icon" href="assets/logo/favicon.ico" sizes="32x32">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Meme background container -->
+  <div id="lags-meme-bg" class="meme-bg-container" style="display:none;"></div>
+
+  <!-- Interactive animated background canvas -->
+  <canvas id="lags-bg-canvas"></canvas>
+
+  <!-- Overlay -->
+  <div id="lags-bg-overlay" class="bg-overlay"></div>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo" aria-label="LAGS UNBLOCKED home">
+        <img src="assets/logo/logo.svg" alt="LAGS UNBLOCKED" class="logo-img">
+        <span class="logo-text">LAGS<span class="logo-accent">UNBLOCKED</span></span>
+      </a>
+      <nav class="nav" id="main-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="library.html" class="nav-link">Library</a>
+        <a href="discover.html" class="nav-link js-auth-login active" style="display:none;">Discover People</a>
+        <a href="profile.html" class="nav-link js-auth-profile" style="display:none;">My Profile</a>
+        <a href="collections.html" class="nav-link js-auth-profile" style="display:none;">Saved Games</a>
+        <button class="nav-link settings-btn" id="open-settings" aria-label="Open settings">Settings</button>
+        <button class="nav-link meme-toggle" id="meme-toggle" aria-label="Toggle meme background">
+          MEME BACKGROUND: <span id="meme-toggle-state">OFF</span>
+        </button>
+        <a href="#" class="nav-link random-btn" id="nav-random" aria-label="Random game">Random</a>
+        <a href="login.html" class="nav-link js-auth-login" style="display:none;">Login</a>
+        <a href="register.html" class="nav-link js-auth-login" style="display:none;">Register</a>
+        <button class="nav-link js-auth-logout" id="nav-logout" style="display:none;">Logout</button>
+      </nav>
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="discover-page">
+    <div class="container">
+      <div class="discover-header">
+        <h1>Discover People</h1>
+        <p>Find and follow other players in the LAGS UNBLOCKED community.</p>
+      </div>
+
+      <!-- Not logged in -->
+      <div id="discover-not-logged-in" style="text-align:center;padding:60px 0;display:none;">
+        <h2>Log in to discover people</h2>
+        <p>Create an account to follow players and build your network.</p>
+        <a href="login.html" class="btn btn-primary">Log In</a>
+        <a href="register.html" class="btn btn-outline" style="margin-left:10px;">Create Account</a>
+      </div>
+
+      <!-- Discovery container -->
+      <div id="discover-container" style="display:none;">
+        <div class="discover-search">
+          <div class="search-box" style="max-width:400px;">
+            <div class="search-inner">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="text" id="discover-search" placeholder="Search users..." autocomplete="off">
+            </div>
+          </div>
+        </div>
+
+        <div class="discover-grid">
+          <!-- People You May Know -->
+          <div class="discover-section">
+            <div class="section-header">
+              <h2 class="section-title">People You May Know</h2>
+            </div>
+            <div class="user-list" id="discover-recommendations"></div>
+          </div>
+
+          <!-- Search Results / Suggested -->
+          <div class="discover-section">
+            <div class="section-header">
+              <h2 class="section-title">Suggested Accounts</h2>
+            </div>
+            <div class="user-list" id="discover-suggested"></div>
+          </div>
+        </div>
+
+        <div id="discover-search-results" style="display:none;margin-top:24px;">
+          <div class="section-header">
+            <h2 class="section-title">Search Results</h2>
+          </div>
+          <div class="user-list" id="discover-search-list"></div>
+        </div>
+      </div>
+
+      <div id="discover-loading" style="text-align:center;padding:40px 0;">Loading...</div>
+      <div id="discover-error" style="text-align:center;padding:40px 0;color:#ef4444;display:none;"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="logo-mini">LAGS<span class="logo-accent">UNBLOCKED</span></div>
+        <p>Free HTML5 games. Play anywhere.</p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="library.html">Game Library</a>
+        <a href="profile.html">My Profile</a>
+        <a href="settings.html">Settings</a>
+      </div>
+      <div class="footer-note">
+        &copy; <span id="year">2026</span> LAGS UNBLOCKED. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.3/dist/pocketbase.umd.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/background.js"></script>
+  <script src="script.js"></script>
+  <script>
+    (function(){
+      const container = document.getElementById('discover-container');
+      const notLoggedIn = document.getElementById('discover-not-logged-in');
+      const loading = document.getElementById('discover-loading');
+      const errorDiv = document.getElementById('discover-error');
+      const recList = document.getElementById('discover-recommendations');
+      const suggestedList = document.getElementById('discover-suggested');
+      const searchInput = document.getElementById('discover-search');
+      const searchResults = document.getElementById('discover-search-results');
+      const searchList = document.getElementById('discover-search-list');
+
+      async function init(){
+        const me = window.LAGS_AUTH.getCurrentUser();
+        if(!me){
+          notLoggedIn.style.display = 'block';
+          loading.style.display = 'none';
+          return;
+        }
+
+        try {
+          const [recs, suggested] = await Promise.all([
+            window.LAGS_AUTH.getPeopleYouMayKnow(10),
+            window.LAGS_AUTH.searchUsers('', 10)
+          ]);
+          renderUsers(recList, recs, 'recommendations');
+          renderUsers(suggestedList, suggested, 'suggested');
+        } catch(e){
+          errorDiv.textContent = e.message || 'Failed to load suggestions.';
+          errorDiv.style.display = 'block';
+        } finally {
+          loading.style.display = 'none';
+          container.style.display = 'block';
+        }
+      }
+
+      function renderUsers(list, users, type){
+        list.innerHTML = '';
+        if(users.length===0){
+          list.innerHTML = '<p style="color:var(--text-muted);">No users found.</p>';
+          return;
+        }
+        users.forEach(u=>{
+          const el = document.createElement('div');
+          el.className = 'user-list-item';
+          const initial = (u.username||'U').charAt(0).toUpperCase();
+          el.innerHTML = `
+            <div class="user-avatar-wrap">
+              <div class="user-avatar-sm">${initial}</div>
+            </div>
+            <div class="user-info">
+              <div class="user-name">${escapeHtml(u.username||'User')}</div>
+              <div class="user-meta">${u.display_name||''}</div>
+            </div>
+            <button class="btn btn-small btn-primary follow-disc-btn" data-id="${u.id}" data-user="${escapeHtml(u.username||'')}">Follow</button>
+            <a href="profile.html?user=${escapeHtml(u.username||'')}" class="btn btn-small btn-outline" style="margin-left:8px;">View</a>
+          `;
+          el.querySelector('.follow-disc-btn').onclick = async (e)=>{
+            e.stopPropagation();
+            try {
+              await window.LAGS_AUTH.followUser(u.id);
+              const btn = el.querySelector('.follow-disc-btn');
+              btn.textContent = 'Following';
+              btn.disabled = true;
+              btn.classList.add('btn-outline');
+              btn.classList.remove('btn-primary');
+            } catch(err){
+              alert(err.message || 'Failed to follow user.');
+            }
+          };
+          list.appendChild(el);
+        });
+      }
+
+      function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+
+      // Search
+      let searchTimeout = null;
+      searchInput.addEventListener('input', ()=>{
+        clearTimeout(searchTimeout);
+        const q = searchInput.value.trim();
+        if(!q){
+          searchResults.style.display = 'none';
+          return;
+        }
+        searchTimeout = setTimeout(async ()=>{
+          try {
+            const results = await window.LAGS_AUTH.searchUsers(q, 10);
+            searchList.innerHTML = '';
+            if(results.length===0){
+              searchList.innerHTML = '<p style="color:var(--text-muted);">No matching users.</p>';
+            } else {
+              results.forEach(u=>{
+                const el = document.createElement('div');
+                el.className = 'user-list-item';
+                const initial = (u.username||'U').charAt(0).toUpperCase();
+                el.innerHTML = `
+                  <div class="user-avatar-wrap">
+                    <div class="user-avatar-sm">${initial}</div>
+                  </div>
+                  <div class="user-info">
+                    <div class="user-name">${escapeHtml(u.username||'User')}</div>
+                    <div class="user-meta">${u.display_name||''}</div>
+                  </div>
+                  <button class="btn btn-small btn-primary follow-search-btn" data-id="${u.id}">Follow</button>
+                  <a href="profile.html?user=${escapeHtml(u.username||'')}" class="btn btn-small btn-outline" style="margin-left:8px;">View</a>
+                `;
+                el.querySelector('.follow-search-btn').onclick = async (e)=>{
+                  e.stopPropagation();
+                  try {
+                    await window.LAGS_AUTH.followUser(u.id);
+                    const btn = el.querySelector('.follow-search-btn');
+                    btn.textContent = 'Following';
+                    btn.disabled = true;
+                    btn.classList.add('btn-outline');
+                    btn.classList.remove('btn-primary');
+                  } catch(err){
+                    alert(err.message || 'Failed to follow user.');
+                  }
+                };
+                searchList.appendChild(el);
+              });
+            }
+            searchResults.style.display = 'block';
+          } catch(e){
+            console.warn('search failed', e);
+          }
+        }, 400);
+      });
+
+      // Logout
+      document.getElementById('nav-logout').addEventListener('click', async (e)=>{
+        e.preventDefault();
+        await window.LAGS_AUTH.logout();
+        window.location.href = 'index.html';
+      });
+
+      init();
+    })();
+  </script>
+</body>
+</html>

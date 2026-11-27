@@ -1,0 +1,94 @@
+{
+  "games": [
+    {
+      "id": "snake-runner",
+      "title": "Snake Runner",
+      "category": "Arcade",
+      "description": "Guide the snake through endless obstacles. Collect food, grow longer, and survive as long as you can in this fast-paced arcade challenge.",
+      "path": "games/snake-runner/index.html",
+      "thumbnail": "assets/thumbnails/snake-runner.svg",
+      "featured": true,
+      "recent": true,
+      "controls": "Arrow keys to move"
+    },
+    {
+      "id": "neon-breaker",
+      "title": "Neon Breaker",
+      "category": "Action",
+      "description": "Smash through neon blocks with a glowing paddle. Fast reflexes and precise aim required to clear every level.",
+      "path": "games/neon-breaker/index.html",
+      "thumbnail": "assets/thumbnails/neon-breaker.svg",
+      "featured": true,
+      "popular": true,
+      "controls": "Mouse or arrow keys"
+    },
+    {
+      "id": "space-blast",
+      "title": "Space Blast",
+      "category": "Shooter",
+      "description": "Defend the galaxy from incoming alien waves. Blast enemies, dodge fire, and survive the cosmic onslaught.",
+      "path": "games/space-blast/index.html",
+      "thumbnail": "assets/thumbnails/space-blast.svg",
+      "featured": true,
+      "recent": true,
+      "controls": "Arrow keys to move, Space to shoot"
+    },
+    {
+      "id": "cyber-slope",
+      "title": "Cyber Slope",
+      "category": "Racing",
+      "description": "Race down a neon-lit cyber slope at breakneck speed. Dodge barriers and collect boosters to set a new record.",
+      "path": "games/cyber-slope/index.html",
+      "thumbnail": "assets/thumbnails/cyber-slope.svg",
+      "featured": true,
+      "popular": true,
+      "controls": "Arrow keys to steer"
+    },
+    {
+      "id": "pixel-dungeon",
+      "title": "Pixel Dungeon",
+      "category": "Adventure",
+      "description": "Explore a retro pixelated dungeon filled with traps and treasure. Find the exit before time runs out.",
+      "path": "games/pixel-dungeon/index.html",
+      "thumbnail": "assets/thumbnails/pixel-dungeon.svg",
+      "recent": true,
+      "controls": "Arrow keys to move"
+    },
+    {
+      "id": "retro-racer",
+      "title": "Retro Racer",
+      "category": "Racing",
+      "description": "Classic top-down racing action. Overtake rivals, take tight corners, and cross the finish line first.",
+      "path": "games/retro-racer/index.html",
+      "thumbnail": "assets/thumbnails/retro-racer.svg",
+      "popular": true,
+      "controls": "Arrow keys to drive"
+    },
+    {
+      "id": "void-rift",
+      "title": "Void Rift",
+      "category": "Puzzle",
+      "description": "Manipulate portals and bend space to solve challenging puzzles. Think in dimensions to escape the void.",
+      "path": "games/void-rift/index.html",
+      "thumbnail": "assets/thumbnails/void-rift.svg",
+      "controls": "Mouse to place portals"
+    },
+    {
+      "id": "neon-pong",
+      "title": "Neon Pong",
+      "category": "Arcade",
+      "description": "A neon-styled twist on the classic paddle game. Challenge the AI in fast, glowing rallies.",
+      "path": "games/neon-pong/index.html",
+      "thumbnail": "assets/thumbnails/neon-pong.svg",
+      "controls": "Mouse or arrow keys"
+    }
+  ],
+  "categories": [
+    "Arcade",
+    "Action",
+    "Shooter",
+    "Racing",
+    "Adventure",
+    "Puzzle"
+  ]
+}

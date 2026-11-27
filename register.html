@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | LAGS UNBLOCKED</title>
+  <meta name="description" content="Create your LAGS UNBLOCKED account.">
+  <link rel="icon" type="image/svg+xml" href="assets/logo/favicon.svg">
+  <link rel="icon" href="assets/logo/favicon.ico" sizes="32x32">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Meme background container -->
+  <div id="lags-meme-bg" class="meme-bg-container" style="display:none;"></div>
+
+  <!-- Interactive animated background canvas -->
+  <canvas id="lags-bg-canvas"></canvas>
+
+  <!-- Overlay -->
+  <div id="lags-bg-overlay" class="bg-overlay"></div>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo" aria-label="LAGS UNBLOCKED home">
+        <img src="assets/logo/logo.svg" alt="LAGS UNBLOCKED" class="logo-img">
+        <span class="logo-text">LAGS<span class="logo-accent">UNBLOCKED</span></span>
+      </a>
+      <nav class="nav" id="main-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="library.html" class="nav-link">Library</a>
+      </nav>
+      <a href="login.html" class="btn btn-outline" style="margin-left:10px;">Log In</a>
+    </div>
+  </header>
+
+  <main class="auth-page">
+    <div class="container auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <div class="logo-mini">LAGS<span class="logo-accent">UNBLOCKED</span></div>
+          <h1>Create account</h1>
+          <p>Join the LAGS UNBLOCKED community. Sign up with email, password, and username.</p>
+        </div>
+
+        <form id="register-form" novalidate>
+          <div class="form-group">
+            <label for="reg-email">Email</label>
+            <input type="email" id="reg-email" placeholder="Enter your email" autocomplete="email" required>
+            <div class="field-error" id="email-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-username">Username</label>
+            <input type="text" id="reg-username" placeholder="Choose a username" autocomplete="username" required>
+            <div class="field-hint" id="username-hint">3+ characters, letters and numbers only</div>
+            <div class="field-error" id="username-error"></div>
+            <div class="field-status" id="username-status"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-password">Password</label>
+            <input type="password" id="reg-password" placeholder="Create a password" autocomplete="new-password" required>
+            <div class="field-hint" id="password-hint">At least 6 characters</div>
+            <div class="field-error" id="password-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-password-confirm">Confirm Password</label>
+            <input type="password" id="reg-password-confirm" placeholder="Confirm your password" autocomplete="new-password" required>
+            <div class="field-error" id="password-confirm-error"></div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-full" id="register-btn">Create Account</button>
+          </div>
+
+          <div class="form-error" id="form-error" style="display:none;"></div>
+        </form>
+
+        <div class="auth-footer">
+          <p>Already have an account? <a href="login.html">Log in</a></p>
+          <p style="margin-top:8px;"><a href="index.html">← Back to games</a></p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="logo-mini">LAGS<span class="logo-accent">UNBLOCKED</span></div>
+        <p>Free HTML5 games. Play anywhere.</p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="library.html">Game Library</a>
+        <a href="login.html">Log In</a>
+      </div>
+      <div class="footer-note">
+        &copy; <span id="year">2026</span> LAGS UNBLOCKED. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.3/dist/pocketbase.umd.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/background.js"></script>
+  <script>
+    (function(){
+      const form = document.getElementById('register-form');
+      const emailInput = document.getElementById('reg-email');
+      const usernameInput = document.getElementById('reg-username');
+      const passwordInput = document.getElementById('reg-password');
+      const confirmInput = document.getElementById('reg-password-confirm');
+      const registerBtn = document.getElementById('register-btn');
+      const formError = document.getElementById('form-error');
+      const emailError = document.getElementById('email-error');
+      const usernameError = document.getElementById('username-error');
+      const passwordError = document.getElementById('password-error');
+      const confirmError = document.getElementById('password-confirm-error');
+      const usernameStatus = document.getElementById('username-status');
+      const usernameHint = document.getElementById('username-hint');
+
+      let usernameAvailable = false;
+      let availabilityCheckTimeout = null;
+
+      function clearErrors(){
+        formError.style.display='none';
+        formError.textContent='';
+        emailError.textContent='';
+        usernameError.textContent='';
+        passwordError.textContent='';
+        confirmError.textContent='';
+        emailInput.classList.remove('error');
+        usernameInput.classList.remove('error');
+        passwordInput.classList.remove('error');
+        confirmInput.classList.remove('error');
+      }
+
+      function setFieldError(input, el, msg){
+        input.classList.add('error');
+        el.textContent = msg;
+      }
+
+      // Username availability validation (debounced)
+      usernameInput.addEventListener('input', ()=>{
+        const val = usernameInput.value.trim();
+        clearTimeout(availabilityCheckTimeout);
+        usernameStatus.textContent = '';
+
+        if(val.length < 3){
+          usernameAvailable = false;
+          usernameHint.textContent = '3+ characters, letters and numbers only';
+          usernameHint.style.color = 'var(--text-muted)';
+          return;
+        }
+        if(!/^[a-zA-Z0-9_]+$/.test(val)){
+          usernameAvailable = false;
+          usernameHint.textContent = 'Letters, numbers, and underscores only';
+          usernameHint.style.color = 'var(--text-muted)';
+          return;
+        }
+
+        usernameHint.textContent = 'Checking availability...';
+        usernameHint.style.color = 'var(--accent-purple)';
+
+        availabilityCheckTimeout = setTimeout(async ()=>{
+          try {
+            if(window.LAGS_AUTH && window.LAGS_AUTH.hasBackend){
+              const user = await window.LAGS_AUTH.getUserByUsername(val);
+              if(user){
+                usernameAvailable = false;
+                usernameStatus.textContent = 'Username already taken';
+                usernameStatus.style.color = '#ef4444';
+                usernameHint.textContent = 'Choose a different username';
+                usernameHint.style.color = '#ef4444';
+              } else {
+                usernameAvailable = true;
+                usernameStatus.textContent = 'Username available';
+                usernameStatus.style.color = '#22c55e';
+                usernameHint.textContent = '3+ characters, letters and numbers only';
+                usernameHint.style.color = 'var(--text-muted)';
+              }
+            } else {
+              usernameAvailable = true;
+              usernameStatus.textContent = 'Backend not configured';
+              usernameStatus.style.color = 'var(--text-muted)';
+            }
+          } catch(err){
+            usernameAvailable = false;
+            usernameStatus.textContent = 'Unable to check availability';
+            usernameStatus.style.color = 'var(--text-muted)';
+          }
+        }, 600);
+      });
+
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        clearErrors();
+        const email = emailInput.value.trim();
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+        const confirm = confirmInput.value;
+
+        if(!email){ setFieldError(emailInput, emailError, 'Email is required.'); return; }
+        if(!username){ setFieldError(usernameInput, usernameError, 'Username is required.'); return; }
+        if(username.length < 3){ setFieldError(usernameInput, usernameError, 'Username must be at least 3 characters.'); return; }
+        if(!/^[a-zA-Z0-9_]+$/.test(username)){ setFieldError(usernameInput, usernameError, 'Letters, numbers, and underscores only.'); return; }
+        if(!usernameAvailable){ setFieldError(usernameInput, usernameError, 'This username is already taken.'); return; }
+        if(!password){ setFieldError(passwordInput, passwordError, 'Password is required.'); return; }
+        if(password.length < 6){ setFieldError(passwordInput, passwordError, 'Password must be at least 6 characters.'); return; }
+        if(password !== confirm){ setFieldError(confirmInput, confirmError, 'Passwords do not match.'); return; }
+
+        registerBtn.disabled = true;
+        registerBtn.textContent = 'Creating account...';
+
+        try {
+          await window.LAGS_AUTH.register(email, password, username);
+          window.location.href = 'index.html';
+        } catch(err){
+          registerBtn.disabled = false;
+          registerBtn.textContent = 'Create Account';
+          formError.textContent = err.message || 'Failed to create account. Please try again.';
+          formError.style.display = 'block';
+        }
+      });
+
+      // Init background
+      new window.BackgroundSystem().init();
+    })();
+  </script>
+</body>
+</html>

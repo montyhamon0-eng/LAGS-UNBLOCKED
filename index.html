@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LAGS UNBLOCKED - Play Free HTML5 Games</title>
+  <meta name="description" content="LAGS UNBLOCKED - A premium gaming portal with interactive backgrounds, searchable game library, and custom meme backgrounds.">
+  <link rel="icon" type="image/svg+xml" href="assets/logo/favicon.svg">
+  <link rel="icon" href="assets/logo/favicon.ico" sizes="32x32">
+  <link rel="stylesheet" href="style.css">
+  <script src="assets/js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.3/dist/pocketbase.umd.js"></script>
+  <script src="assets/js/auth.js"></script>
+</head>
+<body>
+  <!-- Meme background container -->
+  <div id="lags-meme-bg" class="meme-bg-container" style="display:none;"></div>
+
+  <!-- Interactive animated background canvas -->
+  <canvas id="lags-bg-canvas"></canvas>
+
+  <!-- Overlay to darken background for readability -->
+  <div id="lags-bg-overlay" class="bg-overlay"></div>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo" aria-label="LAGS UNBLOCKED home">
+        <img src="assets/logo/logo.svg" alt="LAGS UNBLOCKED" class="logo-img">
+        <span class="logo-text">LAGS<span class="logo-accent">UNBLOCKED</span></span>
+      </a>
+
+      <nav class="nav" id="main-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="library.html" class="nav-link">Library</a>
+        <a href="discover.html" class="nav-link js-auth-login">Discover People</a>
+        <a href="profile.html" class="nav-link js-auth-profile" style="display:none;">My Profile</a>
+        <a href="collections.html" class="nav-link js-auth-profile" style="display:none;">Saved Games</a>
+        <button class="nav-link settings-btn" id="open-settings" aria-label="Open settings">Settings</button>
+        <button class="nav-link meme-toggle" id="meme-toggle" aria-label="Toggle meme background">
+          MEME BACKGROUND: <span id="meme-toggle-state">OFF</span>
+        </button>
+        <a href="#" class="nav-link random-btn" id="nav-random" aria-label="Random game">Random</a>
+        <a href="login.html" class="nav-link js-auth-login" style="display:none;">Login</a>
+        <a href="register.html" class="nav-link js-auth-login" style="display:none;">Register</a>
+        <button class="nav-link js-auth-logout" id="nav-logout" style="display:none;">Logout</button>
+      </nav>
+
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <h1 class="hero-title">Welcome to <span class="hero-accent">LAGS UNBLOCKED</span></h1>
+        <p class="hero-sub">Play the best free HTML5 games instantly. No downloads, no installs, just games.</p>
+
+        <div class="search-box">
+          <div class="search-inner">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="text" id="game-search" placeholder="Search games..." autocomplete="off">
+            <button class="search-btn" id="search-clear" style="display:none;">×</button>
+          </div>
+          <div class="search-hints" id="search-hints"></div>
+        </div>
+
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="hero-random">Random Game</button>
+          <a href="#categories" class="btn btn-outline">Browse Categories</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Community Rankings -->
+    <section class="section" id="community-rankings">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Community Rankings</h2>
+          <a href="library.html" class="view-all">View All <span>→</span></a>
+        </div>
+        <div class="rankings-row">
+          <div class="ranking-panel">
+            <h3 class="ranking-title">Most Upvoted</h3>
+            <div class="game-grid" id="grid-most-upvoted"></div>
+          </div>
+          <div class="ranking-panel">
+            <h3 class="ranking-title">Trending</h3>
+            <div class="game-grid" id="grid-trending"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popular Games -->
+    <section class="section" id="popular">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Popular Games</h2>
+          <a href="library.html" class="view-all">View All <span>→</span></a>
+        </div>
+        <div class="game-grid" id="grid-popular"></div>
+      </div>
+    </section>
+
+    <!-- Recently Added -->
+    <section class="section" id="recent">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Recently Added</h2>
+          <a href="library.html" class="view-all">View All <span>→</span></a>
+        </div>
+        <div class="game-grid" id="grid-recent"></div>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="section" id="categories">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Game Categories</h2>
+          <a href="library.html" class="view-all">Browse All <span>→</span></a>
+        </div>
+        <div class="category-grid" id="grid-categories"></div>
+      </div>
+    </section>
+
+    <!-- Favorites -->
+    <section class="section" id="favorites">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Favourite Games</h2>
+          <p class="section-sub" id="fav-empty" style="display:none;">You haven't favourited any games yet.</p>
+        </div>
+        <div class="game-grid" id="grid-favorites"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings Modal -->
+  <div class="modal" id="settings-modal">
+    <div class="modal-backdrop" id="settings-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Settings</h3>
+        <button class="modal-close" id="settings-close" aria-label="Close settings">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-group">
+          <h4>Background</h4>
+          <div class="setting-row">
+            <label class="toggle-label">
+              Meme Background
+              <span class="toggle">
+                <input type="checkbox" id="setting-meme-bg">
+                <span class="toggle-slider"></span>
+              </span>
+            </label>
+            <span class="toggle-hint" id="meme-bg-hint">OFF</span>
+          </div>
+
+          <div class="setting-row range-row">
+            <label>Overlay Opacity</label>
+            <input type="range" id="setting-overlay" min="0" max="100" value="55">
+            <span class="range-val" id="overlay-val">55%</span>
+          </div>
+
+          <div class="setting-row range-row">
+            <label>Brightness</label>
+            <input type="range" id="setting-brightness" min="0" max="200" value="100">
+            <span class="range-val" id="brightness-val">100%</span>
+          </div>
+
+          <div class="setting-row range-row">
+            <label>Blur</label>
+            <input type="range" id="setting-blur" min="0" max="20" value="0">
+            <span class="range-val" id="blur-val">0px</span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h4>Animation</h4>
+          <div class="setting-row">
+            <label class="toggle-label">
+              Particle Effects
+              <span class="toggle">
+                <input type="checkbox" id="setting-particles">
+                <span class="toggle-slider"></span>
+              </span>
+            </label>
+            <span class="toggle-hint" id="particles-hint">ON</span>
+          </div>
+
+          <div class="setting-row">
+            <label class="toggle-label">
+              Mouse Interaction
+              <span class="toggle">
+                <input type="checkbox" id="setting-mouse">
+                <span class="toggle-slider"></span>
+              </span>
+            </label>
+            <span class="toggle-hint" id="mouse-hint">ON</span>
+          </div>
+
+          <div class="setting-row range-row">
+            <label>Animation Intensity</label>
+            <input type="range" id="setting-intensity" min="0" max="200" value="100">
+            <span class="range-val" id="intensity-val">100%</span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h4>Custom Meme Background</h4>
+          <div class="setting-row">
+            <label>Background Image URL</label>
+            <input type="text" id="setting-meme-url" placeholder="https://example.com/meme.gif">
+            <button class="btn btn-small btn-primary" id="setting-meme-apply">Apply</button>
+            <p class="field-hint">Supports GIF, PNG, JPG, WebP. Place files in assets/backgrounds/</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="settings-reset">Reset to Defaults</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="logo-mini">LAGS<span class="logo-accent">UNBLOCKED</span></div>
+        <p>Free HTML5 games. Play anywhere.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">Home</a>
+        <a href="library.html">Game Library</a>
+        <a href="#categories">Categories</a>
+        <a href="#" id="footer-settings">Settings</a>
+      </div>
+      <div class="footer-note">
+        &copy; <span id="year">2026</span> LAGS UNBLOCKED. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/background.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // Auth nav integration for homepage
+    (function(){
+      const logoutBtn = document.getElementById('nav-logout');
+      if(logoutBtn){
+        logoutBtn.addEventListener('click', async (e)=>{
+          e.preventDefault();
+          await window.LAGS_AUTH.logout();
+          window.location.href = 'index.html';
+        });
+      }
+      // Initial auth UI update
+      const user = window.LAGS_AUTH.getCurrentUser();
+      if(user){
+        window.LAGS_AUTH.onAuthChange(()=>{}); // ensure listener registered
+        document.querySelectorAll('.js-auth-logout').forEach(el=>el.style.display='inline-flex');
+        document.querySelectorAll('.js-auth-profile').forEach(el=>el.style.display='inline-flex');
+        document.querySelectorAll('.js-auth-login').forEach(el=>el.style.display='none');
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Settings | LAGS UNBLOCKED</title>
+  <meta name="description" content="Manage your LAGS UNBLOCKED account settings.">
+  <link rel="icon" type="image/svg+xml" href="assets/logo/favicon.svg">
+  <link rel="icon" href="assets/logo/favicon.ico" sizes="32x32">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="lags-meme-bg" class="meme-bg-container" style="display:none;"></div>
+  <canvas id="lags-bg-canvas"></canvas>
+  <div id="lags-bg-overlay" class="bg-overlay"></div>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo" aria-label="LAGS UNBLOCKED home">
+        <img src="assets/logo/logo.svg" alt="LAGS UNBLOCKED" class="logo-img">
+        <span class="logo-text">LAGS<span class="logo-accent">UNBLOCKED</span></span>
+      </a>
+      <nav class="nav" id="main-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="library.html" class="nav-link">Library</a>
+        <a href="profile.html" class="nav-link js-auth-profile">My Profile</a>
+        <a href="settings.html" class="nav-link js-auth-profile active">Account Settings</a>
+        <button class="nav-link settings-btn" id="open-settings" aria-label="Open settings">Settings</button>
+        <a href="login.html" class="nav-link js-auth-login" style="display:none;">Login</a>
+        <a href="register.html" class="nav-link js-auth-login" style="display:none;">Register</a>
+        <button class="nav-link js-auth-logout" id="nav-logout" style="display:none;">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="settings-page">
+    <div class="container">
+      <h1>Account Settings</h1>
+      <p>Manage your profile, credentials, and privacy.</p>
+
+      <!-- Not logged in -->
+      <div id="settings-not-logged-in" style="text-align:center;padding:60px 0;display:none;">
+        <h2>Log in to access settings</h2>
+        <p>Create an account to customise your profile.</p>
+        <a href="login.html" class="btn btn-primary">Log In</a>
+        <a href="register.html" class="btn btn-outline" style="margin-left:10px;">Create Account</a>
+      </div>
+
+      <!-- Settings container -->
+      <div id="settings-container" style="display:none;">
+        <div class="settings-grid">
+          <!-- Profile Section -->
+          <div class="settings-card">
+            <h3>Profile</h3>
+            <div class="form-group">
+              <label>Display Name</label>
+              <input type="text" id="setting-display-name" placeholder="Your display name">
+            </div>
+            <div class="form-group">
+              <label>Biography</label>
+              <textarea id="setting-biography" placeholder="Tell people about yourself..." rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Profile Picture</label>
+              <input type="file" id="setting-avatar" accept="image/*">
+              <p class="field-hint">Upload a profile picture (PNG, JPG, WebP).</p>
+            </div>
+            <button class="btn btn-primary" id="save-profile-btn">Save Profile</button>
+          </div>
+
+          <!-- Account Section -->
+          <div class="settings-card">
+            <h3>Account</h3>
+            <div class="form-group">
+              <label>Username</label>
+              <input type="text" id="setting-username" placeholder="Username">
+              <p class="field-hint">Changing your username may break @mentions and links to your profile.</p>
+            </div>
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" id="setting-current-password" placeholder="Current password">
+            </div>
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" id="setting-new-password" placeholder="New password (6+ chars)">
+            </div>
+            <div class="form-group">
+              <label>Confirm New Password</label>
+              <input type="password" id="setting-confirm-password" placeholder="Confirm new password">
+            </div>
+            <button class="btn btn-primary" id="save-account-btn">Save Account Changes</button>
+          </div>
+
+          <!-- Safety Section -->
+          <div class="settings-card">
+            <h3>Safety & Privacy</h3>
+            <div class="form-group">
+              <label>Block User</label>
+              <input type="text" id="setting-block-user" placeholder="Username to block">
+              <button class="btn btn-small btn-outline" id="block-user-btn">Block</button>
+              <p class="field-hint">Blocked users cannot follow you or interact with your profile.</p>
+            </div>
+            <div class="form-group">
+              <label>Report User</label>
+              <input type="text" id="setting-report-user" placeholder="Username to report">
+              <textarea id="setting-report-reason" placeholder="Reason for reporting..." rows="2"></textarea>
+              <button class="btn btn-small btn-outline" id="report-user-btn">Report</button>
+            </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="settings-card danger-card">
+            <h3>Delete Account</h3>
+            <p>Deleting your account will remove your profile, votes, collections, and follows. This cannot be undone.</p>
+            <button class="btn btn-outline" id="delete-account-btn" style="background:#ef4444;color:#fff;">Delete Account</button>
+          </div>
+        </div>
+
+        <div class="form-error" id="settings-form-error" style="display:none;"></div>
+        <div class="form-success" id="settings-form-success" style="display:none;"></div>
+
+        <div style="margin-top:30px;">
+          <button class="btn btn-outline" id="settings-logout-btn" style="background:#ef4444;color:#fff;">Logout</button>
+        </div>
+      </div>
+
+      <div id="settings-loading" style="text-align:center;padding:40px 0;">Loading settings...</div>
+      <div id="settings-error" style="text-align:center;padding:40px 0;color:#ef4444;display:none;"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand"><div class="logo-mini">LAGS<span class="logo-accent">UNBLOCKED</span></div><p>Free HTML5 games. Play anywhere.</p></div>
+      <div class="footer-links"><a href="index.html">Home</a><a href="profile.html">My Profile</a></div>
+    </div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.3/dist/pocketbase.umd.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/background.js"></script>
+  <script src="script.js"></script>
+  <script>
+    (function(){
+      const container = document.getElementById('settings-container');
+      const notLoggedIn = document.getElementById('settings-not-logged-in');
+      const loading = document.getElementById('settings-loading');
+      const errorDiv = document.getElementById('settings-error');
+      const formError = document.getElementById('settings-form-error');
+      const formSuccess = document.getElementById('settings-form-success');
+
+      async function init(){
+        const me = window.LAGS_AUTH.getCurrentUser();
+        if(!me){
+          notLoggedIn.style.display = 'block';
+          loading.style.display = 'none';
+          return;
+        }
+        // Populate fields
+        document.getElementById('setting-display-name').value = me.display_name || '';
+        document.getElementById('setting-biography').value = me.biography || '';
+        document.getElementById('setting-username').value = me.username || '';
+        loading.style.display = 'none';
+        container.style.display = 'block';
+      }
+
+      function showError(msg){ formError.textContent = msg; formError.style.display = 'block'; formSuccess.style.display = 'none'; }
+      function showSuccess(msg){ formSuccess.textContent = msg; formSuccess.style.display = 'block'; formSuccess.style.background = 'rgba(34,197,94,0.1)'; formSuccess.style.border = '1px solid rgba(34,197,94,0.25)'; formSuccess.style.color = '#22c55e'; formSuccess.style.padding = '10px 14px'; formSuccess.style.borderRadius = 'var(--radius-sm)'; formSuccess.style.marginTop = '12px'; formError.style.display = 'none'; }
+
+      document.getElementById('save-profile-btn').addEventListener('click', async ()=>{
+        const displayName = document.getElementById('setting-display-name').value.trim();
+        const bio = document.getElementById('setting-biography').value.trim();
+        const avatarFile = document.getElementById('setting-avatar').files[0];
+        try {
+          const updateData = {};
+          if(displayName!==undefined) updateData.display_name = displayName;
+          if(bio!==undefined) updateData.biography = bio;
+          await window.LAGS_AUTH.updateUserProfile(me.id, updateData);
+          if(avatarFile){
+            // Upload avatar file
+            const formData = new FormData();
+            formData.append('avatar', avatarFile);
+            const res = await fetch(window.LAGS_CONFIG.POCKETBASE_URL + '/api/collections/users/records/' + me.id, {
+              method: 'PATCH',
+              headers: { Authorization: 'Bearer ' + window.LAGS_AUTH.getAuthToken() },
+              body: formData
+            });
+            if(!res.ok) throw new Error('Failed to upload avatar.');
+          }
+          showSuccess('Profile saved.');
+        } catch(err){
+          showError(err.message || 'Failed to save profile.');
+        }
+      });
+
+      document.getElementById('save-account-btn').addEventListener('click', async ()=>{
+        const username = document.getElementById('setting-username').value.trim();
+        const currentPass = document.getElementById('setting-current-password').value;
+        const newPass = document.getElementById('setting-new-password').value;
+        const confirmPass = document.getElementById('setting-confirm-password').value;
+        try {
+          if(username){
+            await window.LAGS_AUTH.updateUserProfile(me.id, { username });
+          }
+          if(newPass){
+            if(newPass.length<6) throw new Error('New password must be at least 6 characters.');
+            if(newPass!==confirmPass) throw new Error('New passwords do not match.');
+            await window.LAGS_AUTH.changePassword(me.id, currentPass, newPass);
+          }
+          showSuccess('Account saved.');
+        } catch(err){
+          showError(err.message || 'Failed to save account changes.');
+        }
+      });
+
+      document.getElementById('block-user-btn').addEventListener('click', async ()=>{
+        const username = document.getElementById('setting-block-user').value.trim();
+        if(!username){ showError('Enter a username to block.'); return; }
+        try {
+          await window.LAGS_AUTH.blockUser(username);
+          showSuccess('User blocked.');
+        } catch(err){
+          showError(err.message || 'Failed to block user.');
+        }
+      });
+
+      document.getElementById('report-user-btn').addEventListener('click', async ()=>{
+        const username = document.getElementById('setting-report-user').value.trim();
+        const reason = document.getElementById('setting-report-reason').value.trim();
+        if(!username){ showError('Enter a username to report.'); return; }
+        if(!reason){ showError('Enter a reason for the report.'); return; }
+        try {
+          await window.LAGS_AUTH.reportUserByUsername(username, reason);
+          showSuccess('Report submitted.');
+        } catch(err){
+          showError(err.message || 'Failed to submit report.');
+        }
+      });
+
+      document.getElementById('delete-account-btn').addEventListener('click', async ()=>{
+        if(!confirm('Are you sure? This will permanently delete your account and all associated data. This cannot be undone.')) return;
+        if(!confirm('This action is irreversible. Continue?')) return;
+        try {
+          await window.LAGS_AUTH.deleteAccount();
+          await window.LAGS_AUTH.logout();
+          window.location.href = 'index.html';
+        } catch(err){
+          showError(err.message || 'Failed to delete account.');
+        }
+      });
+
+      document.getElementById('settings-logout-btn').addEventListener('click', async ()=>{
+        await window.LAGS_AUTH.logout();
+        window.location.href = 'index.html';
+      });
+
+      document.getElementById('nav-logout').addEventListener('click', async (e)=>{
+        e.preventDefault();
+        await window.LAGS_AUTH.logout();
+        window.location.href = 'index.html';
+      });
+
+      init();
+    })();
+  </script>
+</body>
+</html>

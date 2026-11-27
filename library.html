@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Library | LAGS UNBLOCKED</title>
+  <meta name="description" content="Browse and search the full LAGS UNBLOCKED HTML5 game library.">
+  <link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+  <link rel="icon" href="../assets/logo/favicon.ico" sizes="32x32">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <!-- Meme background container -->
+  <div id="lags-meme-bg" class="meme-bg-container" style="display:none;"></div>
+
+  <!-- Interactive animated background canvas -->
+  <canvas id="lags-bg-canvas"></canvas>
+
+  <!-- Overlay to darken background for readability -->
+  <div id="lags-bg-overlay" class="bg-overlay"></div>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo" aria-label="LAGS UNBLOCKED home">
+        <img src="../assets/logo/logo.svg" alt="LAGS UNBLOCKED" class="logo-img">
+        <span class="logo-text">LAGS<span class="logo-accent">UNBLOCKED</span></span>
+      </a>
+
+      <nav class="nav" id="main-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="library.html" class="nav-link active">Library</a>
+        <a href="#categories" class="nav-link">Categories</a>
+        <button class="nav-link settings-btn" id="open-settings" aria-label="Open settings">Settings</button>
+        <button class="nav-link meme-toggle" id="meme-toggle" aria-label="Toggle meme background">
+          MEME BACKGROUND: <span id="meme-toggle-state">OFF</span>
+        </button>
+        <a href="#" class="nav-link random-btn" id="nav-random" aria-label="Random game">Random</a>
+      </nav>
+
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="section library-section">
+      <div class="container">
+        <div class="library-header" style="display:flex;flex-direction:column;gap:16px;align-items:flex-start;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <h1 class="section-title" style="margin:0;">Game Library</h1>
+            <span style="font-size:0.85rem;color:var(--text-muted);background:var(--bg-card-hover);padding:4px 10px;border-radius:20px;border:1px solid var(--border);">
+              <span id="library-count">0</span> games
+            </span>
+          </div>
+          <p style="color:var(--text-muted);max-width:600px;">Search, filter by category, and launch your favourite HTML5 games instantly.</p>
+        </div>
+
+        <div class="search-box" style="max-width:560px;margin:0 0 32px 0;">
+          <div class="search-inner">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="text" id="game-search" placeholder="Search games..." autocomplete="off">
+            <button class="search-btn" id="search-clear" style="display:none;">×</button>
+          </div>
+          <div class="search-hints" id="search-hints"></div>
+        </div>
+
+        <!-- Category filter pills -->
+        <div class="filter-pills" id="filter-pills" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
+          <button class="filter-pill active" data-category="all">All</button>
+        </div>
+
+        <div class="game-grid" id="grid-library"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings Modal -->
+  <div class="modal" id="settings-modal">
+    <div class="modal-backdrop" id="settings-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Settings</h3>
+        <button class="modal-close" id="settings-close" aria-label="Close settings">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-group">
+          <h4>Background</h4>
+          <div class="setting-row">
+            <label class="toggle-label">
+              Meme Background
+              <span class="toggle">
+                <input type="checkbox" id="setting-meme-bg">
+                <span class="toggle-slider"></span>
+              </span>
+            </label>
+            <span class="toggle-hint" id="meme-bg-hint">OFF</span>
+          </div>
+
+          <div class="setting-row range-row">
+            <label>Overlay Opacity</label>
+            <input type="range" id="setting-overlay" min="0" max="100" value="55">
+            <span class="range-val" id="overlay-val">55%</span>
+          </div>
+
+          <div class="setting-row range-row">
+            <label>Brightness</label>
+            <input type="range" id="setting-brightness" min="0" max="200" value="100">
+            <span class="range-val" id="brightness-val">100%</span>
+          </div>
+
+          <div class="setting-row range-row">
+            <label>Blur</label>
+            <input type="range" id="setting-blur" min="0" max="20" value="0">
+            <span class="range-val" id="blur-val">0px</span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h4>Animation</h4>
+          <div class="setting-row">
+            <label class="toggle-label">
+              Particle Effects
+              <span class="toggle">
+                <input type="checkbox" id="setting-particles">
+                <span class="toggle-slider"></span>
+              </span>
+            </label>
+            <span class="toggle-hint" id="particles-hint">ON</span>
+          </div>
+
+          <div class="setting-row">
+            <label class="toggle-label">
+              Mouse Interaction
+              <span class="toggle">
+                <input type="checkbox" id="setting-mouse">
+                <span class="toggle-slider"></span>
+              </span>
+            </label>
+            <span class="toggle-hint" id="mouse-hint">ON</span>
+          </div>
+
+          <div class="setting-row range-row">
+            <label>Animation Intensity</label>
+            <input type="range" id="setting-intensity" min="0" max="200" value="100">
+            <span class="range-val" id="intensity-val">100%</span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h4>Custom Meme Background</h4>
+          <div class="setting-row">
+            <label>Background Image URL</label>
+            <input type="text" id="setting-meme-url" placeholder="https://example.com/meme.gif">
+            <button class="btn btn-small btn-primary" id="setting-meme-apply">Apply</button>
+            <p class="field-hint">Supports GIF, PNG, JPG, WebP. Place files in assets/backgrounds/</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="settings-reset">Reset to Defaults</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="logo-mini">LAGS<span class="logo-accent">UNBLOCKED</span></div>
+        <p>Free HTML5 games. Play anywhere.</p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="library.html">Game Library</a>
+        <a href="#categories">Categories</a>
+        <a href="#" id="footer-settings">Settings</a>
+      </div>
+      <div class="footer-note">
+        &copy; <span id="year">2026</span> LAGS UNBLOCKED. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.3/dist/pocketbase.umd.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/background.js"></script>
+  <script src="../script.js"></script>
+  <script>
+    // Library-specific initialization
+    (function(){
+      const grid = document.getElementById('grid-library');
+      const pills = document.getElementById('filter-pills');
+      let activeCat = 'all';
+
+      function renderPills(){
+        pills.innerHTML = '<button class="filter-pill ' + (activeCat==='all'?'active':'') + '" data-category="all">All</button>';
+        (window.LAGS && window.LAGS.categories || []).forEach? null : null;
+        // Use global games loaded by script.js via fetch; we re-fetch categories from data attribute not available.
+        // Instead build from rendered games categories.
+        const cats = [...new Set((window.LAGS && window.LAGS.games) ? window.LAGS.games.map(g=>g.category) : [])];
+        cats.forEach(cat=>{
+          const b=document.createElement('button');
+          b.className='filter-pill '+(activeCat===cat?'active':'');
+          b.dataset.category=cat;
+          b.textContent=cat;
+          pills.appendChild(b);
+        });
+      }
+
+      function renderGames(list){
+        grid.innerHTML='';
+        if(list.length===0){
+          grid.innerHTML='<p style="color:var(--text-muted);grid-column:1/-1;">No games match your filter.</p>';
+          return;
+        }
+        list.forEach(game=>{
+          const card=document.createElement('article');
+          card.className='game-card';
+          card.setAttribute('role','button');
+          card.setAttribute('tabindex','0');
+          card.setAttribute('aria-label','Play '+game.title);
+          const isFav = (window.LAGS.favourites.has(game.id));
+          const isRecent = (window.LAGS.recentlyPlayed.has(game.id));
+          card.innerHTML=`
+            <div class="game-card-thumb">
+              <img src="${escapeHtml(game.thumbnail)}" alt="${escapeHtml(game.title)}" loading="lazy">
+              <div class="game-card-badge">${isRecent?'Recent':isFav?'Favourite':escapeHtml(game.category)}</div>
+            </div>
+            <div class="game-card-info">
+              <div class="game-card-title">${escapeHtml(game.title)}</div>
+              <div class="game-card-category">${escapeHtml(game.category)}</div>
+            </div>
+            <button class="fav-btn" aria-label="${isFav?'Remove from favourites':'Add to favourites'}">${isFav?'★':'☆'}</button>
+          `;
+          card.addEventListener('click',(e)=>{
+            if(e.target.closest('.fav-btn')) return;
+            window.location.href=game.path;
+          });
+          card.addEventListener('keydown',(e)=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();window.location.href=game.path;} });
+          const fb=card.querySelector('.fav-btn');
+          fb.addEventListener('click',(e)=>{
+            e.stopPropagation();
+            toggleFavLib(game.id, fb, card);
+          });
+          grid.appendChild(card);
+        });
+      }
+
+      function toggleFavLib(id, btn, card){
+        const favs = new Set(JSON.parse(localStorage.getItem('lags_favourites')||'[]'));
+        if(favs.has(id)){
+          favs.delete(id); btn.textContent='☆'; btn.setAttribute('aria-label','Add to favourites');
+        } else {
+          favs.add(id); btn.textContent='★'; btn.setAttribute('aria-label','Remove from favourites');
+        }
+        localStorage.setItem('lags_favourites', JSON.stringify([...favs]));
+        window.LAGS.favourites=favs;
+      }
+
+      function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+
+      // Wait for games to load then render
+      function boot(){
+        if(!window.LAGS || !window.LAGS.games || window.LAGS.games.length===0){
+          setTimeout(boot, 50);
+          return;
+        }
+        const games = window.LAGS.games;
+        document.getElementById('library-count').textContent = games.length;
+        renderPills();
+        renderGames(games);
+
+        pills.addEventListener('click',(e)=>{
+          if(!e.target.classList.contains('filter-pill')) return;
+          pills.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+          e.target.classList.add('active');
+          activeCat=e.target.dataset.category;
+          const filtered = activeCat==='all'?games:games.filter(g=>g.category===activeCat);
+          renderGames(filtered);
+        });
+
+        // Search
+        const input=document.getElementById('game-search');
+        const clear=document.getElementById('search-clear');
+        const hints=document.getElementById('search-hints');
+        input.addEventListener('input',(e)=>{
+          const v=e.target.value.trim();
+          if(v){ clear.style.display='block'; showHints(v,games); } else { clear.style.display='none'; hints.innerHTML=''; }
+        });
+        clear.addEventListener('click',()=>{ input.value=''; clear.style.display='none'; hints.innerHTML=''; input.focus(); });
+      }
+      boot();
+
+      function showHints(q, list){
+        const matches=list.filter(g=>g.title.toLowerCase().includes(q.toLowerCase())||g.category.toLowerCase().includes(q.toLowerCase())).slice(0,6);
+        if(matches.length===0){ hints.innerHTML='<div style="color:var(--text-muted);padding:6px 10px;">No matching games</div>'; return; }
+        hints.innerHTML=matches.map(g=>`<div class="search-hint-item" data-path="${escapeHtml(g.path)}"><strong>${escapeHtml(g.title)}</strong><span style="color:var(--text-muted);font-size:0.75rem;margin-left:8px;">${escapeHtml(g.category)}</span></div>`).join('');
+        hints.querySelectorAll('.search-hint-item').forEach(item=>{
+          item.addEventListener('click',()=>{ input.value=''; clear.style.display='none'; hints.innerHTML=''; window.location.href=item.getAttribute('data-path'); });
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
